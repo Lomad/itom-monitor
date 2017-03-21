@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!--CPU分析处理器-->
+    <bean id="WinMemoryTimeAnalyzer"
+          class="com.winning.itom.monitor.machine.realtime.analyzer.WinMemoryAnalyzer">
+        <constructor-arg name="redisTemplate" ref="itomRedisTemplate"/>
+        <constructor-arg name="timedTaskFactory" ref="redisTimedTaskFactory"/>
+    </bean>
+
+
+    <!--&lt;!&ndash;每分钟任务处理器&ndash;&gt;-->
+    <!--<bean id="WinProcessorTimePerMinuteTask"-->
+          <!--class="com.winning.itom.monitor.machine.realtime.tasks.WinProcessorTimePerMinuteTask">-->
+        <!--<constructor-arg ref="itomRedisTemplate"/>-->
+        <!--<constructor-arg ref="itomMongoDbFactory"/>-->
+    <!--</bean>-->
+
+
+</beans>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="MachineTimedTaskFactory" class="com.winning.itom.task.redis.RedisTimedTaskFactory">
+        <constructor-arg name="name" value="ITOM.Machine"/>
+        <constructor-arg name="redisTemplate" ref="itomRedisTemplate"/>
+        <constructor-arg name="taskManager" ref="taskManager"/>
+    </bean>
+
+
+    <bean id="taskManager" class="com.winning.itom.task.core.impl.TaskManager">
+        <constructor-arg>
+            <set>
+                <ref bean="WinProcessorTimePerMinuteTask"/>
+            </set>
+        </constructor-arg>
+    </bean>
+
+</beans>

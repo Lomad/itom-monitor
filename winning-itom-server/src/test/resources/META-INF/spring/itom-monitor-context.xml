@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <bean class="com.winning.transport.netty.NettyServer">
+        <constructor-arg name="port" value="9000"/>
+        <constructor-arg name="remoteService" ref="remoteService"/>
+    </bean>
+
+    <bean id="remoteService" class="com.winning.transport.core.service.impl.RemoteServiceImpl"/>
+
+    <bean class="com.winning.itom.monitor.machine.handlers.RealtimeHandler">
+        <constructor-arg name="tranCode" value="ITOM.SYSTEM.H01"/>
+        <constructor-arg name="remoteService" ref="remoteService"/>
+        <constructor-arg name="collectDataAnalyzers">
+            <list>
+                <ref bean="WinProcessorTimeAnalyzer"/>
+            </list>
+        </constructor-arg>
+    </bean>
+</beans>
