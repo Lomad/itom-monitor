@@ -10,12 +10,6 @@
     </bean>
 
 
-    <bean id="taskManager" class="com.winning.itom.task.core.impl.TaskManager">
-        <constructor-arg>
-            <set>
-                <ref bean="WinProcessorTimePerMinuteTask"/>
-            </set>
-        </constructor-arg>
-    </bean>
+    <bean id="taskManager" class="com.winning.itom.task.core.impl.TaskManager"/>
 
 </beans>

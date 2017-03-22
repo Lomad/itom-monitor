@@ -9,5 +9,5 @@ public interface ITimedTaskFactory {
 
     void addTimedTask(TimedTask timedTask);
 
-
+    ITaskManager getTaskManager();
 }

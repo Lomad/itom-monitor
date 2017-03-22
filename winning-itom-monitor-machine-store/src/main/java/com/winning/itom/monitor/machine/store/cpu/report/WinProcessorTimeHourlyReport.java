@@ -13,7 +13,9 @@ public class WinProcessorTimeHourlyReport {
     private String machineIP;
     private Date hourlyDate;
     private String hourlyDateText;
-    private LinkedHashMap<Integer, Double> values = new LinkedHashMap<>();
+
+    private LinkedHashMap<Integer, Double> processTime = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, Double> userTime = new LinkedHashMap<>();
 
     public String getClientId() {
         return clientId;
@@ -55,11 +57,19 @@ public class WinProcessorTimeHourlyReport {
         this.hourlyDateText = hourlyDateText;
     }
 
-    public LinkedHashMap<Integer, Double> getValues() {
-        return values;
+    public LinkedHashMap<Integer, Double> getProcessTime() {
+        return processTime;
     }
 
-    public void setValues(LinkedHashMap<Integer, Double> values) {
-        this.values = values;
+    public void setProcessTime(LinkedHashMap<Integer, Double> processTime) {
+        this.processTime = processTime;
+    }
+
+    public LinkedHashMap<Integer, Double> getUserTime() {
+        return userTime;
+    }
+
+    public void setUserTime(LinkedHashMap<Integer, Double> userTime) {
+        this.userTime = userTime;
     }
 }

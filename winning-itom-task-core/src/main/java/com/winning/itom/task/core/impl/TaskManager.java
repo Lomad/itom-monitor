@@ -14,13 +14,23 @@ public class TaskManager implements ITaskManager {
 
     private final HashMap<String, ITask> taskHashMap;
 
+    public TaskManager() {
+        this(null);
+    }
+
     public TaskManager(Set<ITask> taskSet) {
         this.taskHashMap = new HashMap<>();
-        for (ITask task : taskSet) {
-            this.taskHashMap.put(task.getName(), task);
+        if (taskSet != null) {
+            for (ITask task : taskSet) {
+                this.taskHashMap.put(task.getName(), task);
+            }
         }
     }
 
+    @Override
+    public void registTask(ITask task) {
+        this.taskHashMap.put(task.getName(), task);
+    }
 
     @Override
     public void doTask(String taskName, Map<String, String> arguments) {

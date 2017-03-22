@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,8 @@ import java.util.Set;
 public class WinCpuStore implements IWinCpuStore {
 
     public static final String WIN_PROCESSOR_TIME_COLLECT_DATA_NAME = "system.windows.processor.processorTime";
+    public static final String WIN_USER_TIME_COLLECT_DATA_NAME = "system.windows.processor.userTime";
+
     private final static long HOURLY = 60 * 60000;
     private final static long MINUTE = 60000;
     private final SimpleDateFormat hourMinuteDateFormat = new SimpleDateFormat("HH:mm");
@@ -36,7 +39,7 @@ public class WinCpuStore implements IWinCpuStore {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public CpuValues findCurrentCpuValues(String clientId, String ip) {
+    public CpuValues findCurrentProcessorCpuValues(String clientId, String ip) {
         String id = clientId + "." + ip + "." + WIN_PROCESSOR_TIME_COLLECT_DATA_NAME;
         String realtimeKey = id + ".realtime";
         Map<String, Double> values = this.redisTemplate.opsForHash().entries(realtimeKey);
@@ -47,7 +50,7 @@ public class WinCpuStore implements IWinCpuStore {
     }
 
     @Override
-    public CpuValues findLastCpuValuesInCache(String clientId, String ip, long start) {
+    public CpuValues findLastProcessorCpuValuesInCache(String clientId, String ip, long start) {
         String id = clientId + "." + ip + "." + WIN_PROCESSOR_TIME_COLLECT_DATA_NAME;
         String minuteKey = id + ".minutes";
 
@@ -68,32 +71,44 @@ public class WinCpuStore implements IWinCpuStore {
     }
 
     @Override
-    public CpuValues findMinuteCpuValues(String clientId, String ip, long startHour, long endHour) {
+    public Map<String, CpuValues> findMinuteCpuValues(String clientId, String ip, long startHour, long endHour) {
         String startTimeText = this.simpleDateFormat.format(startHour - startHour % HOURLY);
         String endTimeText = this.simpleDateFormat.format(endHour - endHour % HOURLY);
-        CpuValues cpuValues = new CpuValues();
+
+        Map<String, CpuValues> map = new HashMap<>();
 
         Query query = Query.query(
                 Criteria.where("clientId").is(clientId)
                         .and("machineIP").is(ip)
                         .and("hourlyDateText").gte(startTimeText).lte(endTimeText));
 
-        String collectionName = "WinProcessorTimeHourlyReport";
+        String collectionName = "WinProcessorHourlyReport";
         List<WinProcessorTimeHourlyReport> reports =
                 this.mongoTemplate.find(query, WinProcessorTimeHourlyReport.class, collectionName);
 
         if (reports.size() == 0)
-            return cpuValues;
+            return map;
+
+        CpuValues processTimeCpuValues = new CpuValues();
+        CpuValues useTimeCpuValues = new CpuValues();
 
         for (WinProcessorTimeHourlyReport report : reports) {
             long hourTime = report.getHourlyDate().getTime();
-            for (Integer minute : report.getValues().keySet()) {
+            for (Integer minute : report.getProcessTime().keySet()) {
                 String time = this.hourMinuteDateFormat.format(hourTime + minute * MINUTE);
-                double doubleValue = report.getValues().get(minute);
-                cpuValues.put(time, doubleValue);
+                double doubleValue = report.getProcessTime().get(minute);
+                processTimeCpuValues.put(time, doubleValue);
+            }
+            for (Integer minute : report.getUserTime().keySet()) {
+                String time = this.hourMinuteDateFormat.format(hourTime + minute * MINUTE);
+                double doubleValue = report.getUserTime().get(minute);
+                useTimeCpuValues.put(time, doubleValue);
             }
         }
 
-        return cpuValues;
+        map.put("processTime", processTimeCpuValues);
+        map.put("useTimeCpuValues", useTimeCpuValues);
+
+        return map;
     }
 }

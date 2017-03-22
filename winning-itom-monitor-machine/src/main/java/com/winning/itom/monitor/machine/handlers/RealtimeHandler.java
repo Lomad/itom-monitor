@@ -13,6 +13,8 @@ import com.winning.transport.core.handler.DefaultRemoteCallHandler;
 import com.winning.transport.core.service.IRemoteService;
 import com.winning.transport.core.service.entity.HandleMessageResult;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -25,8 +27,8 @@ public class RealtimeHandler extends DefaultRemoteCallHandler {
 
     private final List<ICollectDataAnalyzer> collectDataAnalyzers;
     private final HashMap<String, ICollectDataAnalyzer> mapCollectDataAnalyzer;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
     private IAuthorizeService authorizeService;
-
 
     public RealtimeHandler(String tranCode, IRemoteService remoteService,
                            List<ICollectDataAnalyzer> collectDataAnalyzers) {
@@ -55,8 +57,12 @@ public class RealtimeHandler extends DefaultRemoteCallHandler {
         requestInfo.setLicenseKey(licenseKey);
 
         if (hashMap.containsKey(RequestParamConstants.TIMESTAMP)) {
-            long timestamp = (long) hashMap.get(RequestParamConstants.TIMESTAMP);
-            requestInfo.setTimestamp(timestamp);
+            String timestamp = hashMap.get(RequestParamConstants.TIMESTAMP).toString();
+            try {
+                requestInfo.setTimestamp(sdf.parse(timestamp).getTime());
+            } catch (ParseException e) {
+                requestInfo.setTimestamp(new Date().getTime());
+            }
         } else {
             requestInfo.setTimestamp(new Date().getTime());
         }

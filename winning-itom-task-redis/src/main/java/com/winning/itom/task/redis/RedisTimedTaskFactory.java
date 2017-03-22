@@ -74,4 +74,9 @@ public class RedisTimedTaskFactory implements ITimedTaskFactory {
         String json = JSON.toJSONString(timedTask);
         this.redisTemplate.opsForValue().set(valueKey, json, 7, TimeUnit.DAYS);
     }
+
+    @Override
+    public ITaskManager getTaskManager() {
+        return this.taskManager;
+    }
 }

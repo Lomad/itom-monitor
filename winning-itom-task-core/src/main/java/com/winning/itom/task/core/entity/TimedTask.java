@@ -72,5 +72,7 @@ public class TimedTask {
         this.taskArgs.put(key, value);
     }
 
-
+    public void putAll(Map<String, String> args) {
+        this.taskArgs.putAll(args);
+    }
 }

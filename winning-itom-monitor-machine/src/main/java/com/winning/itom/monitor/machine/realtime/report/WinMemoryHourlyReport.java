@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 /**
  * Created by nicholasyan on 17/3/18.
  */
-public class WinProcessorTimeHourlyReport {
+public class WinMemoryHourlyReport {
 
     private String clientId;
     private String clientName;
@@ -14,8 +14,7 @@ public class WinProcessorTimeHourlyReport {
     private Date hourlyDate;
     private String hourlyDateText;
 
-    private LinkedHashMap<Integer, Double> processTime = new LinkedHashMap<>();
-    private LinkedHashMap<Integer, Double> userTime = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, Double> memoryAvailable = new LinkedHashMap<>();
 
     public String getClientId() {
         return clientId;
@@ -57,19 +56,11 @@ public class WinProcessorTimeHourlyReport {
         this.hourlyDateText = hourlyDateText;
     }
 
-    public LinkedHashMap<Integer, Double> getProcessTime() {
-        return processTime;
+    public LinkedHashMap<Integer, Double> getMemoryAvailable() {
+        return memoryAvailable;
     }
 
-    public void setProcessTime(LinkedHashMap<Integer, Double> processTime) {
-        this.processTime = processTime;
-    }
-
-    public LinkedHashMap<Integer, Double> getUserTime() {
-        return userTime;
-    }
-
-    public void setUserTime(LinkedHashMap<Integer, Double> userTime) {
-        this.userTime = userTime;
+    public void setMemoryAvailable(LinkedHashMap<Integer, Double> memoryAvailable) {
+        this.memoryAvailable = memoryAvailable;
     }
 }

@@ -2,7 +2,7 @@ package com.winning.itom.monitor.machine.realtime.tasks;
 
 import com.winning.itom.monitor.api.constants.RequestParamConstants;
 import com.winning.itom.monitor.machine.realtime.analyzer.WinCounterConstants;
-import com.winning.itom.monitor.machine.realtime.report.WinProcessorTimeHourlyReport;
+import com.winning.itom.monitor.machine.realtime.report.WinMemoryHourlyReport;
 import com.winning.itom.monitor.machine.utils.IDCreator;
 import com.winning.itom.task.core.ITask;
 import org.slf4j.Logger;
@@ -21,13 +21,12 @@ import java.util.Set;
 /**
  * Created by nicholasyan on 17/3/17.
  */
-public class WinProcessorTimePerMinuteTask implements ITask {
+public class WinMemoryPerMinuteTask implements ITask {
 
-    public final static String TASK_NAME = "com.winning.itom.monitor.machine.realtime.tasks.WinProcessorTimePerMinuteTask";
-    private final static String COLLECTION_NAME = "WinProcessorHourlyReport";
+    public final static String TASK_NAME = "com.winning.itom.monitor.machine.realtime.tasks.WinMemoryPerMinuteTask";
+    private final static String COLLECTION_NAME = "WinMemoryHourlyReport";
 
-
-    private final static Logger logger = LoggerFactory.getLogger(WinProcessorTimePerMinuteTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(WinMemoryPerMinuteTask.class);
     private final static long HOURLY = 60 * 60000;
     private final static long MINUTE = 60000;
     private final RedisTemplate redisTemplate;
@@ -35,8 +34,8 @@ public class WinProcessorTimePerMinuteTask implements ITask {
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-    public WinProcessorTimePerMinuteTask(RedisTemplate redisTemplate,
-                                         MongoTemplate mongoTemplate) {
+    public WinMemoryPerMinuteTask(RedisTemplate redisTemplate,
+                                  MongoTemplate mongoTemplate) {
         this.redisTemplate = redisTemplate;
         this.mongoTemplate = mongoTemplate;
     }
@@ -59,41 +58,35 @@ public class WinProcessorTimePerMinuteTask implements ITask {
         Date hourlyDate = new Date(currentMinute.getTime() - currentMinute.getTime() % HOURLY);
         String hourlyDateText = this.simpleDateFormat.format(hourlyDate);
 
-
         Long minute = (currentMinute.getTime() % HOURLY) / MINUTE;
         //开始计算一分钟平均值
-        Double processTimeValue = this.getMinuteValue(clientId, machineIP, WinCounterConstants.PROCESSOR_TIME, currentMinute);
-        Double userTimeValue = this.getMinuteValue(clientId, machineIP, WinCounterConstants.USER_TIME, currentMinute);
-
+        Double memoryAvailableValue = this.getMinuteValue(clientId, machineIP, WinCounterConstants.MEMORY_AVAILABLE, currentMinute);
 
         Query query = new Query(
                 Criteria.where("clientId").is(clientId)
                         .and("machineIP").is(machineIP)
                         .and("hourlyDateText").is(hourlyDateText));
 
-        WinProcessorTimeHourlyReport report =
-                this.mongoTemplate.findOne(query, WinProcessorTimeHourlyReport.class, COLLECTION_NAME);
+        WinMemoryHourlyReport report =
+                this.mongoTemplate.findOne(query, WinMemoryHourlyReport.class, COLLECTION_NAME);
 
         if (report == null) {
-            report = new WinProcessorTimeHourlyReport();
+            report = new WinMemoryHourlyReport();
             report.setClientId(clientId);
             report.setClientName(clientName);
             report.setMachineIP(machineIP);
             report.setHourlyDateText(hourlyDateText);
             report.setHourlyDate(hourlyDate);
-            report.getProcessTime().put(minute.intValue(), processTimeValue);
-            report.getUserTime().put(minute.intValue(), userTimeValue);
+            report.getMemoryAvailable().put(minute.intValue(), memoryAvailableValue);
             this.mongoTemplate.insert(report, COLLECTION_NAME);
         } else {
-            String processTimeKey = "processTime." + minute.intValue();
-            String userTimeKey = "userTime." + minute.intValue();
+            String memoryAvailableKey = "memoryAvailable." + minute.intValue();
             Update update = new Update()
-                    .set(processTimeKey, processTimeValue)
-                    .set(userTimeKey, userTimeValue);
+                    .set(memoryAvailableKey, memoryAvailableValue);
             this.mongoTemplate.updateFirst(query, update, COLLECTION_NAME);
         }
 
-        logger.info("CPU 当前时间{},处理时间{}完毕,共耗时{}ms",
+        logger.info("Memory 当前时间{},处理时间{}完毕,共耗时{}ms",
                 simpleDateFormat.format(new Date()),
                 simpleDateFormat.format(currentMinute), System.currentTimeMillis() - current);
     }
@@ -114,5 +107,4 @@ public class WinProcessorTimePerMinuteTask implements ITask {
         Double value = Double.valueOf(values.iterator().next().replace(currentMinuteKey, ""));
         return value;
     }
-
 }

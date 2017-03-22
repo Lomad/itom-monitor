@@ -7,6 +7,8 @@ import java.util.Map;
  */
 public interface ITaskManager {
 
+    void registTask(ITask task);
+
     void doTask(String taskName, Map<String, String> arguments);
 
 }

@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * Created by nicholasyan on 17/3/18.
@@ -29,7 +30,7 @@ public class WinCpuStoreUT extends
 
         while (true) {
             long current = System.currentTimeMillis();
-            CpuValues cpuValues = this.winCpuStore.findCurrentCpuValues("ITOM.Client.Test", "192.168.0.115");
+            CpuValues cpuValues = this.winCpuStore.findCurrentProcessorCpuValues("ITOM.Client.Test", "192.168.0.115");
             if (cpuValues.size() == 0) {
                 logger.info("未找到数据!");
                 return;
@@ -56,7 +57,7 @@ public class WinCpuStoreUT extends
             long current = System.currentTimeMillis();
             long startTime = System.currentTimeMillis() - 2 * 60 * 60 * 1000;
             CpuValues cpuValues =
-                    this.winCpuStore.findLastCpuValuesInCache("ITOM.Client.Test", "192.168.0.115", startTime);
+                    this.winCpuStore.findLastProcessorCpuValuesInCache("ITOM.Client.Test", "192.168.0.115", startTime);
 
             logger.info("共{}条数据,共用时{}ms",
                     cpuValues.size(),
@@ -72,7 +73,7 @@ public class WinCpuStoreUT extends
         while (true) {
             long current = System.currentTimeMillis();
             long startTime = System.currentTimeMillis() - 2 * 60 * 60 * 1000;
-            CpuValues cpuValues =
+            Map<String, CpuValues> cpuValues =
                     this.winCpuStore.findMinuteCpuValues("ITOM.Client.Test", "192.168.0.115", startTime, current);
 
             logger.info("共{}条数据,共用时{}ms",
