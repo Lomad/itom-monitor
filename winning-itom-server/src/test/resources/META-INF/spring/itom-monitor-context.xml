@@ -17,6 +17,7 @@ http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
         <constructor-arg name="collectDataAnalyzers">
             <list>
                 <ref bean="WinProcessorTimeAnalyzer"/>
+                <ref bean="WinMemoryTimeAnalyzer"/>
             </list>
         </constructor-arg>
     </bean>
