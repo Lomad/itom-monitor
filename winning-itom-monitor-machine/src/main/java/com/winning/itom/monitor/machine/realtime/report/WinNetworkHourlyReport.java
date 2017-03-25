@@ -6,16 +6,17 @@ import java.util.LinkedHashMap;
 /**
  * Created by nicholasyan on 17/3/18.
  */
-public class WinMemoryHourlyReport {
+public class WinNetworkHourlyReport {
 
     private String clientId;
     private String clientName;
     private String machineIP;
     private Date hourlyDate;
     private String hourlyDateText;
+    private String networkInterface;
 
-    private LinkedHashMap<Integer, Double> memoryAvailable = new LinkedHashMap<>();
-    private LinkedHashMap<Integer, Double> memoryPages = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, Double> receivedBytes = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, Double> sentBytes = new LinkedHashMap<>();
 
     public String getClientId() {
         return clientId;
@@ -57,19 +58,27 @@ public class WinMemoryHourlyReport {
         this.hourlyDateText = hourlyDateText;
     }
 
-    public LinkedHashMap<Integer, Double> getMemoryAvailable() {
-        return memoryAvailable;
+    public LinkedHashMap<Integer, Double> getReceivedBytes() {
+        return receivedBytes;
     }
 
-    public void setMemoryAvailable(LinkedHashMap<Integer, Double> memoryAvailable) {
-        this.memoryAvailable = memoryAvailable;
+    public void setReceivedBytes(LinkedHashMap<Integer, Double> receivedBytes) {
+        this.receivedBytes = receivedBytes;
     }
 
-    public LinkedHashMap<Integer, Double> getMemoryPages() {
-        return memoryPages;
+    public LinkedHashMap<Integer, Double> getSentBytes() {
+        return sentBytes;
     }
 
-    public void setMemoryPages(LinkedHashMap<Integer, Double> memoryPages) {
-        this.memoryPages = memoryPages;
+    public void setSentBytes(LinkedHashMap<Integer, Double> sentBytes) {
+        this.sentBytes = sentBytes;
+    }
+
+    public String getNetworkInterface() {
+        return networkInterface;
+    }
+
+    public void setNetworkInterface(String networkInterface) {
+        this.networkInterface = networkInterface;
     }
 }

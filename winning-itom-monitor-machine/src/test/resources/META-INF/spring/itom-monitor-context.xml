@@ -18,6 +18,8 @@ http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
             <list>
                 <ref bean="WinProcessorTimeAnalyzer"/>
                 <ref bean="WinMemoryTimeAnalyzer"/>
+                <ref bean="WinNetworkTimeAnalyzer"/>
+                <ref bean="WinPhysicDiskAnalyzer"/>
             </list>
         </constructor-arg>
     </bean>

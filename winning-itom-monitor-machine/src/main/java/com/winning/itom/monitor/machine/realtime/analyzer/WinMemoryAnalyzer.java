@@ -25,13 +25,19 @@ public class WinMemoryAnalyzer extends AbstractAnalyzer {
                                    CollectDataMap collectDataMap) {
 
         long current = System.currentTimeMillis();
-        this.analyzeCollectData(requestInfo, collectDataMap, WinCounterConstants.MEMORY_AVAILABLE, null);
 
-        long currentMinute = this.getCurrentMinute(requestInfo);
-        this.addTimedTask(requestInfo, WinMemoryPerMinuteTask.TASK_NAME, currentMinute, 1, null);
+        this.putRealtimeValue(requestInfo, collectDataMap, WinCounterConstants.MEMORY_AVAILABLE);
+        this.putTimelineValue(requestInfo, collectDataMap, WinCounterConstants.MEMORY_AVAILABLE);
+
+        this.putRealtimeValue(requestInfo, collectDataMap, WinCounterConstants.MEMORY_PAGES_PERSEC);
+        this.putTimelineValue(requestInfo, collectDataMap, WinCounterConstants.MEMORY_PAGES_PERSEC);
+
+        //一分钟后进行分析处理
+        this.addTimedTask(requestInfo, WinMemoryPerMinuteTask.TASK_NAME, 1, null);
 
         logger.info("处理内存用时{}ms", System.currentTimeMillis() - current);
     }
+
 
     @Override
     protected void initTask(ITaskManager taskManager) {

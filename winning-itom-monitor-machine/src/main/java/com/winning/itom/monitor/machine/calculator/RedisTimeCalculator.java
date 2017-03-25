@@ -14,7 +14,7 @@ public class RedisTimeCalculator {
     private final RedisTemplate redisTemplate;
     private final String key;
 
-    public RedisTimeCalculator(String key, RedisTemplate redisTemplate) {
+    public RedisTimeCalculator(RedisTemplate redisTemplate, String key) {
         this.redisTemplate = redisTemplate;
         this.key = key;
     }
@@ -22,6 +22,13 @@ public class RedisTimeCalculator {
     public void addValue(long time, double value) {
         String valueKey = time + "," + value;
         this.redisTemplate.opsForZSet().add(key, valueKey, time);
+    }
+
+    public void addSecondValue(long currentTime, double value) {
+        //精确到秒
+        long currentSecond = currentTime - currentTime % 1000;
+        String valueKey = currentSecond + "," + value;
+        this.redisTemplate.opsForZSet().add(key, valueKey, currentSecond);
     }
 
 
@@ -35,11 +42,6 @@ public class RedisTimeCalculator {
             sumValue = sumValue.add(new BigDecimal(valueKey.replace(time, "")));
             num++;
         }
-
-//        for (double value : values) {
-//            sumValue = sumValue.add(new BigDecimal(String.valueOf(value)));
-//            num++;
-//        }
 
         return sumValue.divide(new BigDecimal(num), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }

@@ -21,15 +21,32 @@ public class WinProcessorTimeAnalyzer extends AbstractAnalyzer {
 
     @Override
     public void analyzeCollectData(RequestInfo requestInfo, CollectDataMap collectDataMap) {
+
         long current = System.currentTimeMillis();
 
         this.analyzeCollectData(requestInfo, collectDataMap, WinCounterConstants.PROCESSOR_TIME, new int[]{1, 5, 15});
         this.analyzeCollectData(requestInfo, collectDataMap, WinCounterConstants.USER_TIME, new int[]{1, 5, 15});
 
-        long currentMinute = this.getCurrentMinute(requestInfo);
-        this.addTimedTask(requestInfo, WinProcessorTimePerMinuteTask.TASK_NAME, currentMinute, 1, null);
+        this.addTimedTask(requestInfo, WinProcessorTimePerMinuteTask.TASK_NAME, 1, null);
 
         logger.info("处理CPU用时{}ms", System.currentTimeMillis() - current);
+    }
+
+
+    protected void analyzeCollectData(RequestInfo requestInfo, CollectDataMap collectDataMap,
+                                      String collectDataName, int[] lastMinutes) {
+
+        Double processTime = this.getDoubleValue(collectDataMap, collectDataName);
+        this.putRealtimeInstanceValue(requestInfo, collectDataName, "current", processTime);
+        this.putTimelineValue(requestInfo, collectDataMap, collectDataName);
+
+        if (lastMinutes != null) {
+            for (int minutes : lastMinutes) {
+                Double value = this.calcLastMinuteAvg(redisTemplate, requestInfo, collectDataName, minutes);
+                String key = "last" + minutes + "m";
+                this.putRealtimeInstanceValue(requestInfo, collectDataName, key, value);
+            }
+        }
     }
 
 
