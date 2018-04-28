@@ -7,4 +7,5 @@ import java.util.LinkedHashMap;
  */
 public class CpuValues extends LinkedHashMap<String, Double> {
 
+
 }
